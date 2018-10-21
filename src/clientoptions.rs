@@ -171,7 +171,7 @@ impl MqttOptions {
         self
     }
 
-    /// Set will retian so that future clients subscribing to will topic
+    /// Set will retain so that future clients subscribing to will topic
     /// knows of client's death.
     pub fn set_will_retain(mut self, retain: bool) -> Self {
         self.will_retain = retain;
@@ -179,6 +179,8 @@ impl MqttOptions {
     }
 
     /// Set CA file for server authentication during TLS connection
+    /// Only available if compiled with openssl support, either tls-openssl or tls-rustls
+    #[cfg(any(feature = "tls-openssl", feature = "tls-rustls"))]
     pub fn set_ca<P>(mut self, cafile: P) -> Self
         where P: AsRef<Path>
     {
@@ -188,12 +190,16 @@ impl MqttOptions {
 
     /// Set flag to determine whether or not to verify server CA during TLS
     /// connection
+    /// Only available if compiled with tls-openssl. Rustls always requires verifying the CA
+    #[cfg(feature = "tls-openssl")]
     pub fn set_should_verify_ca(mut self, should_verify_ca: bool) -> Self {
         self.verify_ca = should_verify_ca;
         self
     }
 
     /// Set client cert and key for server to do client authentication
+    /// Only available if compiled with openssl support, either tls-openssl or tls-rustls
+    #[cfg(any(feature = "tls-openssl", feature = "tls-rustls"))]
     pub fn set_client_cert<P>(mut self, certfile: P, keyfile: P) -> Self
         where P: AsRef<Path>
     {
