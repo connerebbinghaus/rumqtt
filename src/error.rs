@@ -1,17 +1,15 @@
 use std::result;
 use std::io;
 use std::sync::mpsc::{TryRecvError, TrySendError, SendError};
-use std::net::TcpStream;
 
-use openssl;
 use mqtt::topic_name::TopicNameError;
 use mqtt::topic_filter::TopicFilterError;
 use mqtt::packet::*;
 use mqtt::control::variable_header::ConnectReturnCode;
 use connection::NetworkRequest;
 
-pub type SslError = openssl::error::ErrorStack;
-pub type HandShakeError = openssl::ssl::HandshakeError<TcpStream>;
+use stream::StreamError;
+
 pub type Result<T> = result::Result<T, Error>;
 
 quick_error! {
@@ -46,10 +44,7 @@ quick_error! {
         MqttPacket
         PingTimeout
         AwaitPingResp
-        Ssl(e: SslError) {
-            from()
-        }
-        Handshake(e: HandShakeError) {
+        StreamError(e: StreamError) {
             from()
         }
         ConnectionRefused(e: ConnectReturnCode)
